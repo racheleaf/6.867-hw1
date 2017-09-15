@@ -29,7 +29,6 @@ def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, dat
     returns stochastic gradient descent minimum
     '''
     cur_var = initial_guess
-    iteration = 0
     
     while True:
         total_data = len(datay)
@@ -42,9 +41,6 @@ def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, dat
         if np.linalg.norm(gradient_at_cur_var) < threshold:
             break
         cur_var -= step_size * gradient_at_cur_var
-        if iteration % 100 == 0:
-            print(cur_var)
-        iteration += 1
         
     return cur_var
 
@@ -109,31 +105,30 @@ def gradient_lse(dataX, datay, cur_theta):
         g += gradient_lse_data_point(dataX[i], datay[i], cur_theta) / total_data
     return g
 
-# negative Gauss and quadratic bowl functions
-gaussMean, gaussCov, quadBowlA, quadBowlb = loadParams.getData()
-gaussMean = np.array(gaussMean)
-gaussCov = np.array(gaussCov)
-quadBowlA = np.array(quadBowlA)
-quadBowlb = np.array(quadBowlb)
-quadBowlStart = np.array([10, 11], dtype=np.float64)
-step_size = 0.01
-threshold = 0.25
+def run_things():
+    # negative Gauss and quadratic bowl functions
+    gaussMean, gaussCov, quadBowlA, quadBowlb = loadParams.getData()
+    gaussMean = np.array(gaussMean)
+    gaussCov = np.array(gaussCov)
+    quadBowlA = np.array(quadBowlA)
+    quadBowlb = np.array(quadBowlb)
+    quadBowlStart = np.array([10, 11], dtype=np.float64)
+    step_size = 0.01
+    threshold = 0.25
 
-print("BATCH DESCENT MIN:", batch_descent(quadBowlStart, step_size, threshold, lambda v: gradient_quad_bowl(quadBowlA, quadBowlb, v)))
-print("ACTUAL MIN:", np.linalg.inv(quadBowlA).dot(quadBowlb))
+    print("BATCH DESCENT MIN:", batch_descent(quadBowlStart, step_size, threshold, lambda v: gradient_quad_bowl(quadBowlA, quadBowlb, v)))
+    print("ACTUAL MIN:", np.linalg.inv(quadBowlA).dot(quadBowlb))
 
-print('ESTIMATED GRADIENT: {}'.format(numerical_gradient(lambda x: (0.5 * x.T.dot(quadBowlA.dot(x)) - quadBowlb.dot(x)), quadBowlStart)))
-print('ACTUAL GRADIENT: {}'.format(gradient_quad_bowl(quadBowlA, quadBowlb, quadBowlStart)))
+    print('ESTIMATED GRADIENT: {}'.format(numerical_gradient(lambda x: (0.5 * x.T.dot(quadBowlA.dot(x)) - quadBowlb.dot(x)), quadBowlStart)))
+    print('ACTUAL GRADIENT: {}'.format(gradient_quad_bowl(quadBowlA, quadBowlb, quadBowlStart)))
 
-# least square fitting problem
-X, y = loadData.getData()
-thetaGuess = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype = "float64")
-print("GRADIENT DESCENT MIN:", batch_descent(thetaGuess, step_size / 100, threshold, lambda v: gradient_lse(X, y, v)))
-print("SGD MIN:", stochastic_descent(thetaGuess, step_size / 100, threshold * 10, gradient_lse_data_point, X, y))
+    # least square fitting problem
+    X, y = loadData.getData()
+    thetaGuess = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype = "float64")
+    print("GRADIENT DESCENT MIN:", batch_descent(thetaGuess, step_size / 100, threshold, lambda v: gradient_lse(X, y, v)))
+    print("SGD MIN:", stochastic_descent(thetaGuess, step_size / 100, threshold * 10, gradient_lse_data_point, X, y))
 
-#print("DATA")
-#print(X)
-#print(y)
+# run_things()
 
 
 

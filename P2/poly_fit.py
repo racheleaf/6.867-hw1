@@ -124,16 +124,18 @@ def plot_cos_fit(X, Y, M):
     f = lambda a: eval_cos_func(a, coeff)
     plot(X, Y, f)
 
-    
-X, Y = loadData.getData(False)
-M = 2
-plot_poly_fit(X, Y, M)
-plot_cos_fit(X, Y, M)
-X_poly_basis = get_poly_basis(X, M)
-poly = find_fit(X_poly_basis, Y)
-eval_poly_at = lambda a: eval_poly(a, poly)
-print("POLY SSE", eval_sse(X, Y, eval_poly_at))
-print("POLY GRADIENT SSE", gradient_sse_poly(X, Y, poly))
-print("COSINE FIT", find_cos_fit(X, Y, M))
+def run_things(): 
+    X, Y = loadData.getData(False)
+    M = 2
+    plot_poly_fit(X, Y, M)
+    plot_cos_fit(X, Y, M)
+    X_poly_basis = get_poly_basis(X, M)
+    poly = find_fit(X_poly_basis, Y)
+    eval_poly_at = lambda a: eval_poly(a, poly)
+    print("POLY SSE", eval_sse(X, Y, eval_poly_at))
+    print("POLY GRADIENT SSE", gradient_sse_poly(X, Y, poly))
+    print("COSINE FIT", find_cos_fit(X, Y, M))
 
-plt.show()
+    plt.show()
+
+# run_things()
