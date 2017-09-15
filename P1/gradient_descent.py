@@ -37,10 +37,10 @@ def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, dat
         yi = datay[data_index]
         gradient_at_cur_var = gradient(xi, yi, cur_var)
         # stops when the norm of the gradient falls below threshold
+        # print(np.linalg.norm(gradient_at_cur_var))
         if np.linalg.norm(gradient_at_cur_var) < threshold:
             break
         cur_var -= step_size * gradient_at_cur_var
-        print("HELLO", cur_var)
         
     return cur_var
 
@@ -88,11 +88,22 @@ def gradient_quad_bowl(A, b, vector):
 
 def gradient_lse_data_point(xi, yi, cur_theta):
     '''
-    lse term = (xi*theta - yi)^2
+    lse = (xi*theta - yi)^2
     takes single data point (xi, yi) 
     and returns gradient of lse at cur_theta
     '''
     return 2 * xi.dot(xi) * cur_theta - 2 * xi * yi
+
+def gradient_lse(dataX, datay, cur_theta):
+    '''
+    lse = sum (xi*theta - yi)^2
+    returns gradient of lse at cur_theta
+    '''
+    g = 0
+    total_data = len(datay)
+    for i in range(total_data):
+        g += gradient_lse_data_point(dataX[i], datay[i], cur_theta) / total_data
+    return g
 
 # negative Gauss and quadratic bowl functions
 gaussMean, gaussCov, quadBowlA, quadBowlb = loadParams.getData()
@@ -112,11 +123,9 @@ print('ACTUAL GRADIENT: {}'.format(gradient_quad_bowl(quadBowlA, quadBowlb, quad
 
 # least square fitting problem
 X, y = loadData.getData()
-step_size = 0.00001
-threshold = 1000
 thetaGuess = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype = "float64")
-print("GRADIENT LSE:", gradient_lse_data_point(X[0], y[0], thetaGuess))
-print("STOCHASTIC DESCENT MIN:", stochastic_descent(thetaGuess, step_size, threshold, gradient_lse_data_point, X, y))
+print("GRADIENT DESCENT MIN:", batch_descent(thetaGuess, step_size / 100, threshold, lambda v: gradient_lse(X, y, v)))
+print("SGD MIN:", stochastic_descent(thetaGuess, step_size / 100, threshold * 100, gradient_lse_data_point, X, y))
 
 #print("DATA")
 #print(X)
