@@ -1,6 +1,8 @@
 import numpy as np
 import math
+import random
 import loadParametersP1 as loadParams
+import loadFittingDataP1 as loadData
 
 def batch_descent(initial_guess, step_size, threshold, gradient):
     '''
@@ -21,6 +23,28 @@ def batch_descent(initial_guess, step_size, threshold, gradient):
         w.append(w_new)
         
     return w[-1]
+
+def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, datay):
+    '''
+    initial_guess is a vector
+    gradient is a function computing gradient at single data point
+    returns stochastic gradient descent minimum
+    '''
+    cur_var = initial_guess
+    cur_var = initial_guess
+    
+    while True:
+        total_data = len(datay)
+        data_index = random.randint(0, total_data - 1)
+        xi = dataX[data_index]
+        yi = datay[data_index]
+        gradient_at_cur_var = gradient(xi, yi, cur_var)
+        # stops when the norm of the gradient falls below threshold
+        if np.linalg.norm(gradient_at_cur_var) < threshold:
+            break
+        cur_var -= step_size * gradient_at_cur_var
+        
+    return cur_var
 
 def gradient(f, vector):
     '''
@@ -56,6 +80,15 @@ def gradient_neg_gaussian(mean, cov, vector):
 def gradient_quad_bowl(A, b, vector):
     return A.dot(vector) - b
 
+def gradient_lse_data_point(xi, yi, cur_theta):
+    '''
+    lse term = (xi*theta - yi)^2
+    takes single data point (xi, yi) 
+    and returns gradient of lse at cur_theta
+    '''
+    return 2 * xi.dot(xi).dot(cur_theta) - 2 * xi.dot(yi)
+
+# negative Gauss and quadratic bowl functions
 gaussMean, gaussCov, quadBowlA, quadBowlb = loadParams.getData()
 gaussMean = np.array(gaussMean)
 gaussCov = np.array(gaussCov)
@@ -67,5 +100,11 @@ threshold = 0.25
 
 print("BATCH DESCENT MIN:", batch_descent(quadBowlStart, step_size, threshold, lambda v: gradient_quad_bowl(quadBowlA, quadBowlb, v)))
 print("ACTUAL MIN:", np.linalg.inv(quadBowlA).dot(quadBowlb))
+
+# least square fitting problem
+X, y = loadData.getData()
+print("DATA")
+print(X)
+print(y)
 
 
