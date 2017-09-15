@@ -29,6 +29,7 @@ def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, dat
     returns stochastic gradient descent minimum
     '''
     cur_var = initial_guess
+    iteration = 0
     
     while True:
         total_data = len(datay)
@@ -41,6 +42,9 @@ def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, dat
         if np.linalg.norm(gradient_at_cur_var) < threshold:
             break
         cur_var -= step_size * gradient_at_cur_var
+        if iteration % 100 == 0:
+            print(cur_var)
+        iteration += 1
         
     return cur_var
 
@@ -125,7 +129,7 @@ print('ACTUAL GRADIENT: {}'.format(gradient_quad_bowl(quadBowlA, quadBowlb, quad
 X, y = loadData.getData()
 thetaGuess = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype = "float64")
 print("GRADIENT DESCENT MIN:", batch_descent(thetaGuess, step_size / 100, threshold, lambda v: gradient_lse(X, y, v)))
-print("SGD MIN:", stochastic_descent(thetaGuess, step_size / 100, threshold * 100, gradient_lse_data_point, X, y))
+print("SGD MIN:", stochastic_descent(thetaGuess, step_size / 100, threshold * 10, gradient_lse_data_point, X, y))
 
 #print("DATA")
 #print(X)
