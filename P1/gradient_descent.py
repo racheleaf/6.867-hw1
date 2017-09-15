@@ -11,18 +11,16 @@ def batch_descent(initial_guess, step_size, threshold, gradient):
     threshold = number
     gradient = function computing gradient
     '''
-    w = [np.array(initial_guess)] # list of iteratively computed coordinates
+    w = np.array(initial_guess) # list of iteratively computed coordinates
     
     while True:
-        w_old = w[-1]
-        gradient_at_w_old = gradient(w_old)
+        gradient_at_w = gradient(w)
         # stops when the norm of the gradient falls below threshold
-        if np.linalg.norm(gradient_at_w_old) < threshold:
+        if np.linalg.norm(gradient_at_w) < threshold:
             break
-        w_new = w_old - step_size * gradient_at_w_old
-        w.append(w_new)
-        
-    return w[-1]
+        w -= step_size * gradient_at_w
+
+    return w
 
 def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, datay):
     '''
@@ -46,14 +44,22 @@ def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, dat
         
     return cur_var
 
-def gradient(f, vector):
+def numerical_gradient(f, vector, h=1e-4):
     '''
     f is a function
     vector is point at which we want to calculate the gradient of f
     returns the gradient of f at vector
     '''
-    h = 0.01
-    dim = len(vector)
+    dim = vector.shape
+    grad = np.zeros(shape=dim)
+    for idx in np.ndindex(*dim):
+        perturbed = np.copy(vector)
+        perturbed[idx] += h
+        value1 = f(perturbed)
+        perturbed[idx] -= 2*h
+        value2 = f(perturbed)
+        grad[idx] = (value1 - value2) / (2 * h)
+    return grad
     
 
 def f_neg_gaussian(mean, cov, vector):
@@ -94,17 +100,27 @@ gaussMean = np.array(gaussMean)
 gaussCov = np.array(gaussCov)
 quadBowlA = np.array(quadBowlA)
 quadBowlb = np.array(quadBowlb)
-quadBowlStart = np.array([10, 11])
+quadBowlStart = np.array([10, 11], dtype=np.float64)
 step_size = 0.01
 threshold = 0.25
 
 print("BATCH DESCENT MIN:", batch_descent(quadBowlStart, step_size, threshold, lambda v: gradient_quad_bowl(quadBowlA, quadBowlb, v)))
 print("ACTUAL MIN:", np.linalg.inv(quadBowlA).dot(quadBowlb))
 
+print('ESTIMATED GRADIENT: {}'.format(numerical_gradient(lambda x: (0.5 * x.T.dot(quadBowlA.dot(x)) - quadBowlb.dot(x)), quadBowlStart)))
+print('ACTUAL GRADIENT: {}'.format(gradient_quad_bowl(quadBowlA, quadBowlb, quadBowlStart)))
+
 # least square fitting problem
 X, y = loadData.getData()
-print("DATA")
-print(X)
-print(y)
+#print("DATA")
+#print(X)
+#print(y)
+
+
+
+
+
+
+
 
 
