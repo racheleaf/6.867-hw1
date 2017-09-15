@@ -1,12 +1,12 @@
 import numpy as np
 import math
+import loadParametersP1 as loadParams
 
 def batch_descent(initial_guess, step_size, threshold, gradient):
     '''
     initial_guess = vector
     step_size = number, the size of each step
     threshold = number
-    f = function
     gradient = function computing gradient
     '''
     w = [np.array(initial_guess)] # list of iteratively computed coordinates
@@ -15,7 +15,6 @@ def batch_descent(initial_guess, step_size, threshold, gradient):
         w_old = w[-1]
         gradient_at_w_old = gradient(w_old)
         # stops when the norm of the gradient falls below threshold
-        print(np.linalg.norm(gradient_at_w_old))
         if np.linalg.norm(gradient_at_w_old) < threshold:
             break
         w_new = w_old - step_size * gradient_at_w_old
@@ -40,7 +39,6 @@ def f_neg_gaussian(mean, cov, vector):
         
 def gradient_neg_gaussian(mean, cov, vector):
     f = f_neg_gaussian(mean, cov, vector)
-    print(f)
     inv_cov = np.linalg.inv(cov)
     displacement = vector - mean
     return - f * inv_cov.dot(displacement)
@@ -48,12 +46,16 @@ def gradient_neg_gaussian(mean, cov, vector):
 def gradient_quad_bowl(A, b, vector):
     return A.dot(vector) - b
 
-A = np.array([[10, 5], [5, 10]])
-b = np.transpose(np.array([400, 400]))   
-vector = np.transpose(np.array([2, 2]))
-mean = np.transpose(np.array([1, 1]))
-cov = np.array([[3, 0], [0, 3]])
-print(batch_descent(np.transpose(np.array([10, 11])), .25, 0.001, lambda v: gradient_quad_bowl(A, b, v)))
+gaussMean, gaussCov, quadBowlA, quadBowlb = loadParams.getData()
+gaussMean = np.transpose(np.array(gaussMean))
+gaussCov = np.array(gaussCov)
+quadBowlA = np.array(quadBowlA)
+quadBowlb = np.transpose(np.array(quadBowlb))
+quadBowlStart = np.transpose(np.array([10, 11]))
+step_size = 0.01
+threshold = 0.25
 
+print("BATCH DESCENT MIN:", batch_descent(quadBowlStart, step_size, threshold, lambda v: gradient_quad_bowl(quadBowlA, quadBowlb, v)))
+print("ACTUAL MIN:", np.linalg.inv(quadBowlA).dot(quadBowlb))
 
 
