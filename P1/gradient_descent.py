@@ -11,16 +11,16 @@ def batch_descent(initial_guess, step_size, threshold, gradient):
     threshold = number
     gradient = function computing gradient
     '''
-    w = np.array(initial_guess) # list of iteratively computed coordinates
+    cur_var = initial_guess # list of iteratively computed coordinates
     
     while True:
-        gradient_at_w = gradient(w)
+        gradient_at_cur_var = gradient(cur_var)
         # stops when the norm of the gradient falls below threshold
-        if np.linalg.norm(gradient_at_w) < threshold:
+        if np.linalg.norm(gradient_at_cur_var) < threshold:
             break
-        w -= step_size * gradient_at_w
+        cur_var -= step_size * gradient_at_cur_var
 
-    return w
+    return cur_var
 
 def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, datay):
     '''
@@ -28,7 +28,6 @@ def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, dat
     gradient is a function computing gradient at single data point
     returns stochastic gradient descent minimum
     '''
-    cur_var = initial_guess
     cur_var = initial_guess
     
     while True:
@@ -41,6 +40,7 @@ def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, dat
         if np.linalg.norm(gradient_at_cur_var) < threshold:
             break
         cur_var -= step_size * gradient_at_cur_var
+        print("HELLO", cur_var)
         
     return cur_var
 
@@ -92,7 +92,7 @@ def gradient_lse_data_point(xi, yi, cur_theta):
     takes single data point (xi, yi) 
     and returns gradient of lse at cur_theta
     '''
-    return 2 * xi.dot(xi).dot(cur_theta) - 2 * xi.dot(yi)
+    return 2 * xi.dot(xi) * cur_theta - 2 * xi * yi
 
 # negative Gauss and quadratic bowl functions
 gaussMean, gaussCov, quadBowlA, quadBowlb = loadParams.getData()
@@ -112,6 +112,12 @@ print('ACTUAL GRADIENT: {}'.format(gradient_quad_bowl(quadBowlA, quadBowlb, quad
 
 # least square fitting problem
 X, y = loadData.getData()
+step_size = 0.00001
+threshold = 1000
+thetaGuess = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype = "float64")
+print("GRADIENT LSE:", gradient_lse_data_point(X[0], y[0], thetaGuess))
+print("STOCHASTIC DESCENT MIN:", stochastic_descent(thetaGuess, step_size, threshold, gradient_lse_data_point, X, y))
+
 #print("DATA")
 #print(X)
 #print(y)
