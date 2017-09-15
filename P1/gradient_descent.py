@@ -22,6 +22,16 @@ def batch_descent(initial_guess, step_size, threshold, gradient):
         
     return w[-1]
 
+def gradient(f, vector):
+    '''
+    f is a function
+    vector is point at which we want to calculate the gradient of f
+    returns the gradient of f at vector
+    '''
+    h = 0.01
+    dim = len(vector)
+    
+
 def f_neg_gaussian(mean, cov, vector):
     '''
     mean is a vector at the center of the gaussian
@@ -47,11 +57,11 @@ def gradient_quad_bowl(A, b, vector):
     return A.dot(vector) - b
 
 gaussMean, gaussCov, quadBowlA, quadBowlb = loadParams.getData()
-gaussMean = np.transpose(np.array(gaussMean))
+gaussMean = np.array(gaussMean)
 gaussCov = np.array(gaussCov)
 quadBowlA = np.array(quadBowlA)
-quadBowlb = np.transpose(np.array(quadBowlb))
-quadBowlStart = np.transpose(np.array([10, 11]))
+quadBowlb = np.array(quadBowlb)
+quadBowlStart = np.array([10, 11])
 step_size = 0.01
 threshold = 0.25
 
