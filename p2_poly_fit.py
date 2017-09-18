@@ -93,12 +93,13 @@ def plot(X, Y, f):
     Y is list of y values
     f is function we want to plot
     '''
-    x = np.linspace(0,1,100)
+    x = np.linspace(0, 1, 100)
     y = list(map(f, x))
     plt.plot(x, y)
     plt.plot(X, Y, 'o')
     plt.xlabel('x')
     plt.ylabel('y')
+    plt.show()
     
 def plot_poly_fit(X, Y, M):
     '''
@@ -136,6 +137,4 @@ def run_things():
     print("POLY GRADIENT SSE", gradient_sse_poly(X, Y, poly))
     print("COSINE FIT", find_cos_fit(X, Y, M))
 
-    plt.show()
-
-# run_things()
+run_things()
