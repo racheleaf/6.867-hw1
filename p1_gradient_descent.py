@@ -22,7 +22,7 @@ def batch_descent(initial_guess, step_size, threshold, gradient):
 
     return cur_var
 
-def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, datay):
+def stochastic_descent(initial_guess, gradient, dataX, datay, lr=0.01, iters=10000):
     '''
     initial_guess is a vector
     gradient is a function computing gradient at single data point
@@ -30,7 +30,7 @@ def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, dat
     '''
     cur_var = initial_guess
     
-    while True:
+    for i in range(iters):
         total_data = len(datay)
         data_index = random.randint(0, total_data - 1)
         xi = dataX[data_index]
@@ -38,9 +38,10 @@ def stochastic_descent(initial_guess, step_size, threshold, gradient, dataX, dat
         gradient_at_cur_var = gradient(xi, yi, cur_var)
         # stops when the norm of the gradient falls below threshold
         # print(np.linalg.norm(gradient_at_cur_var))
-        if np.linalg.norm(gradient_at_cur_var) < threshold:
-            break
-        cur_var -= step_size * gradient_at_cur_var
+        cur_var -= lr / math.sqrt(i+1) * gradient_at_cur_var
+        if not i % 100:
+            print("DEBUG: cur_var =", cur_var)
+            print("DEBUG: gradient =", gradient_at_cur_var)
         
     return cur_var
 
@@ -126,15 +127,7 @@ def run_things():
     X, y = loadData.getData()
     thetaGuess = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype = "float64")
     print("GRADIENT DESCENT MIN:", batch_descent(thetaGuess, step_size / 100, threshold, lambda v: gradient_lse(X, y, v)))
-    print("SGD MIN:", stochastic_descent(thetaGuess, step_size / 100, threshold * 10, gradient_lse_data_point, X, y))
+    print("SGD MIN:", stochastic_descent(thetaGuess, gradient_lse_data_point, X, y, lr=step_size / 100000, iters=10000))
 
-# run_things()
-
-
-
-
-
-
-
-
-
+if __name__ == '__main__':
+    run_things()
