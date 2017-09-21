@@ -137,4 +137,5 @@ def run_things():
     print("POLY GRADIENT SSE", gradient_sse_poly(X, Y, poly))
     print("COSINE FIT", find_cos_fit(X, Y, M))
 
-run_things()
+if __name__ == '__main__':
+    run_things()
